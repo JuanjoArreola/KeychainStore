@@ -107,4 +107,11 @@ class KeychainStoreTests: XCTestCase {
         }
     }
     
+    func testGetAllKeys() {
+        do {
+            try store.setObject(["1", "2"], forKey: "from2")
+            try store.allKeys()
+        } catch {}
+    }
+    
 }
