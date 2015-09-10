@@ -179,14 +179,17 @@ public class KeychainStore: NSObject {
             }
             return keys
         }
+        else if status == errSecItemNotFound {
+            return []
+        }
         throw errorFromStatus(status)
     }
     
 //    MARK: - Set data
     /// Adds a `NSData` object to the keychain with the specified key
-    /// - Parameter data: The data to be stored
-    /// - Parameter key: The key of the item to be stored
-    /// - Parameter accessibility: The accessibility type of the data
+    /// - parameter data: The data to be stored
+    /// - parameter key: The key of the item to be stored
+    /// - parameter accessibility: The accessibility type of the data
     public func setData(data: NSData, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
         var query = try getQueryDictionaryForKey(key)
         query[secValueData] = data
@@ -203,9 +206,9 @@ public class KeychainStore: NSObject {
     
 //    MARK: - Set string
     /// Adds a `String` to the keychain with the specified key
-    /// - Parameter string: The `String` to be stored
-    /// - Parameter key: The key of the item to be stored
-    /// - Parameter accessibility: The accessibility type of the string
+    /// - parameter string: The `String` to be stored
+    /// - parameter key: The key of the item to be stored
+    /// - parameter accessibility: The accessibility type of the string
     public func setString(string: String, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
         if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
             try setData(data, forKey: key, accessibility: accessibility)
@@ -216,9 +219,9 @@ public class KeychainStore: NSObject {
     
 //    MARK: - Set object
     /// Adds an object to the keychain with the specified key
-    /// - Parameter object: The object to be stored
-    /// - Parameter key: The key of the item to be stored
-    /// - Parameter accessibility: The accessibility type of the object
+    /// - parameter object: The object to be stored
+    /// - parameter key: The key of the item to be stored
+    /// - parameter accessibility: The accessibility type of the object
     public func setObject(object: NSCoding, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
         let data = NSKeyedArchiver.archivedDataWithRootObject(object)
         try setData(data, forKey: key, accessibility: accessibility)
@@ -226,7 +229,7 @@ public class KeychainStore: NSObject {
     
 //    MARK: - Delete
     /// Remove item with a specified key.
-    /// - Parameter key: The key of the item to be removed
+    /// - parameter key: The key of the item to be removed
     public func deleteItemForKey(key: String) throws {
         let query = try getQueryDictionaryForKey(key)
         let status = SecItemDelete(query)
@@ -248,8 +251,8 @@ public class KeychainStore: NSObject {
     
 //    MARK: - Update data
     /// Updates the data associated with the specified key
-    /// - Parameter data: The updated data
-    /// - Parameter key: The key of the item to be updated
+    /// - parameter data: The updated data
+    /// - parameter key: The key of the item to be updated
     public func updateData(data: NSData, forKey key: String) throws {
         let query = try getQueryDictionaryForKey(key)
         let updateQuery = [secValueData: data]
@@ -262,8 +265,8 @@ public class KeychainStore: NSObject {
     
 //    MARK: - Update object
     /// Updates the object associated with the specified key
-    /// - Parameter object: The updated object
-    /// - Parameter key: The key of the object to be updated
+    /// - parameter object: The updated object
+    /// - parameter key: The key of the object to be updated
     public func updateObject(object: AnyObject, forKey key: String) throws {
         let data = NSKeyedArchiver.archivedDataWithRootObject(object)
         try updateData(data, forKey: key)
@@ -271,8 +274,8 @@ public class KeychainStore: NSObject {
     
 //    MARK: - Update string
     /// Updates the string associated with the specified key
-    /// - Parameter string: The `String` object
-    /// - Parameter key: The key of the `String` to be updated
+    /// - parameter string: The `String` object
+    /// - parameter key: The key of the `String` to be updated
     public func updateString(string: String, forKey key: String) throws {
         if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
             try updateData(data, forKey: key)
