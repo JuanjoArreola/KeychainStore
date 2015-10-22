@@ -190,7 +190,7 @@ public class KeychainStore: NSObject {
     /// - parameter data: The data to be stored
     /// - parameter key: The key of the item to be stored
     /// - parameter accessibility: The accessibility type of the data
-    public func setData(data: NSData, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
+    public func setData(data: NSData, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
         var query = try getQueryDictionaryForKey(key)
         query[secValueData] = data
         query[secAttrAccessible] = accessibility.rawValue
@@ -209,7 +209,7 @@ public class KeychainStore: NSObject {
     /// - parameter string: The `String` to be stored
     /// - parameter key: The key of the item to be stored
     /// - parameter accessibility: The accessibility type of the string
-    public func setString(string: String, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
+    public func setString(string: String, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
         if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
             try setData(data, forKey: key, accessibility: accessibility)
         } else {
@@ -222,7 +222,7 @@ public class KeychainStore: NSObject {
     /// - parameter object: The object to be stored
     /// - parameter key: The key of the item to be stored
     /// - parameter accessibility: The accessibility type of the object
-    public func setObject(object: NSCoding, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
+    public func setObject(object: NSCoding, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
         let data = NSKeyedArchiver.archivedDataWithRootObject(object)
         try setData(data, forKey: key, accessibility: accessibility)
     }
@@ -298,8 +298,7 @@ func errorFromStatus(staus: OSStatus) -> KeychainStoreError {
 // MARK: - KeychainAccessibility
 
 public enum KeychainAccessibility: RawRepresentable {
-    case AfterFirstUnlock, AfterFirstUnlockThisDeviceOnly, Always, WhenPasscodeSetThisDeviceOnly, AlwaysThisDeviceOnly,
-    WhenUnlocked, WhenUnlockedThisDeviceOnly
+    case AfterFirstUnlock, AfterFirstUnlockThisDeviceOnly, Always, WhenPasscodeSetThisDeviceOnly, AlwaysThisDeviceOnly, WhenUnlocked, WhenUnlockedThisDeviceOnly
     
     public init?(rawValue: String) {
         return nil
