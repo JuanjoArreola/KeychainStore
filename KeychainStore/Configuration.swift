@@ -21,7 +21,7 @@ final class Configuration {
             return NSDictionary(contentsOfFile: path) as? [String: AnyObject]
         }
         return nil
-        }()
+    }()
     
     static var defaultAccountName: String = {
         return properties?["default_account_name"] as? String ?? defaultProperties["default_account_name"] as! String
