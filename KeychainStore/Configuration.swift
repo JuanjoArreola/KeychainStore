@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class Configuration {
+public final class Configuration {
     
     private static let defaultProperties: [String: AnyObject] = {
         let bundle = NSBundle(forClass: Configuration.self)
