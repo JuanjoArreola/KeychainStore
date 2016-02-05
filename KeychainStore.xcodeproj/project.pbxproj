@@ -78,10 +78,10 @@
 			isa = PBXGroup;
 			children = (
 				81E250941B7D5490009F72A2 /* KeychainStore.h */,
-				81E250961B7D5490009F72A2 /* Info.plist */,
 				81E250AB1B7D54B2009F72A2 /* KeychainStore.swift */,
 				81EB49441B8B877700FC5CC7 /* Configuration.swift */,
 				81EB49461B8B880600FC5CC7 /* keychain_properties.plist */,
+				81E250961B7D5490009F72A2 /* Info.plist */,
 			);
 			path = KeychainStore;
 			sourceTree = "<group>";

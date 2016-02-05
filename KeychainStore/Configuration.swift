@@ -6,7 +6,7 @@
 //  Copyright © 2015 juanjo. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 final class Configuration {
     
