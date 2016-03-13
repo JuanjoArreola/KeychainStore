@@ -8,16 +8,16 @@
 
 import Foundation
 
-let secClass = kSecClass as String
-let secAttrGeneric = kSecAttrGeneric as String
-let secAttrService = kSecAttrService as String
-let secAttrAccessGroup = kSecAttrAccessGroup as String
-let secAttrAcount = kSecAttrAccount as String
-let secMatchLimit = kSecMatchLimit as String
-let secReturnData = kSecReturnData as String
-let secValueData = kSecValueData as String
-let secAttrAccessible = kSecAttrAccessible as String
-let secReturnAttributes = kSecReturnAttributes as String
+private let secClass = kSecClass as String
+private let secAttrGeneric = kSecAttrGeneric as String
+private let secAttrService = kSecAttrService as String
+private let secAttrAccessGroup = kSecAttrAccessGroup as String
+private let secAttrAcount = kSecAttrAccount as String
+private let secMatchLimit = kSecMatchLimit as String
+private let secReturnData = kSecReturnData as String
+private let secValueData = kSecValueData as String
+private let secAttrAccessible = kSecAttrAccessible as String
+private let secReturnAttributes = kSecReturnAttributes as String
 
 public enum KeychainStoreError: ErrorType {
     case InvalidKey
@@ -30,78 +30,37 @@ public enum KeychainStoreError: ErrorType {
     case ItemNotFound
 }
 
-public class KeychainStore: NSObject {
+public class AbstractKeychainStore {
     
-    public let account: String!
-    private(set) var accessGroup: String?
+    public let account: String
+    public private(set) var accessGroup: String?
     
-    private static var defaultStore: KeychainStore = {
-        return KeychainStore()
-    }()
+    //    MARK: - Initialization
     
-//    MARK: - Initialization
-    
-    public override init() {
-        self.account = Configuration.defaultAccountName
-    }
-    
-    public init(account: String) throws {
+    public required init(account: String) throws {
         self.account = account
-        super.init()
-        
         if account.isEmpty {
             throw KeychainStoreError.InvalidAccount
         }
     }
     
-    public convenience init(account: String, accessGroup: String) throws {
-        try self.init(account: account)
+    public required init(account: String, accessGroup: String) throws {
+        self.account = account
+        self.accessGroup = accessGroup
+        if account.isEmpty {
+            throw KeychainStoreError.InvalidAccount
+        }
         if accessGroup.isEmpty {
             throw KeychainStoreError.InvalidAccessGroup
         }
-        self.accessGroup = accessGroup
     }
     
-//    MARK: - Default store
+    //    MARK: - create query
     
-    public class func dataForKey(key: String) throws -> NSData? {
-        return try defaultStore.dataForKey(key)
-    }
-    
-    public class func objectForKey(key: String) throws -> AnyObject? {
-        return try defaultStore.objectForKey(key)
-    }
-    
-    public class func stringForKey(key: String) throws -> String? {
-        return try defaultStore.stringForKey(key)
-    }
-    
-    public class func setData(data: NSData, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
-        try defaultStore.setData(data, forKey: key, accessibility: accessibility)
-    }
-    
-    public class func setString(string: String, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
-        try defaultStore.setString(string, forKey: key, accessibility: accessibility)
-    }
-    
-    public class func setObject(object: NSCoding, forKey key: String, accessibility: KeychainAccessibility = .WhenUnlocked) throws {
-        try defaultStore.setObject(object, forKey: key, accessibility: accessibility)
-    }
-    
-    public class func deleteItemForKey(key: String) throws {
-        try defaultStore.deleteItemForKey(key)
-    }
-    
-    public class func updateData(data: NSData, forKey key: String) throws {
-        try defaultStore.updateData(data, forKey: key)
-    }
-    
-//    MARK: - create query
-    
-    private func getQueryDictionaryForKey(key: String) throws -> [String: AnyObject] {
+    func getQueryDictionaryForKey(key: String) throws -> [String: AnyObject] {
         var queryDictionary: [String: AnyObject] = [secClass: kSecClassGenericPassword,
-                                                    secAttrAcount: account,
-                                                    secAttrService: key]
+            secAttrAcount: account,
+            secAttrService: key]
         if let accessGroup = accessGroup {
             queryDictionary[secAttrAccessGroup] = accessGroup
         }
@@ -109,7 +68,7 @@ public class KeychainStore: NSObject {
         return queryDictionary
     }
     
-//    MARK: - Get data
+    //    MARK: - Get data
     /// Retrieves a `NSData` from the keychain with the specified key
     /// - parameter key: The key of the item to be retrieved
     /// - returns: The `NSData` from the keychain
@@ -130,27 +89,38 @@ public class KeychainStore: NSObject {
         }
         throw errorFromStatus(status)
     }
-  
-//    MARK: - Get object
-    /// Retrieves an object from the keychain with the specified key
-    /// - parameter key: The key of the item to be retrieved
-    /// - returns: The object from the keychain
-    public func objectForKey(key: String) throws -> AnyObject? {
-        if let data = try dataForKey(key) {
-            return NSKeyedUnarchiver.unarchiveObjectWithData(data)
+    
+    //    MARK: - Set data
+    /// Adds a `NSData` object to the keychain with the specified key
+    /// - parameter data: The data to be stored
+    /// - parameter key: The key of the item to be stored
+    /// - parameter accessibility: The accessibility type of the data
+    public func setData(data: NSData, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
+        var query = try getQueryDictionaryForKey(key)
+        query[secValueData] = data
+        query[secAttrAccessible] = accessibility.rawValue
+        
+        let status = SecItemAdd(query, nil)
+        if status == errSecDuplicateItem {
+            try self.updateData(data, forKey: key)
+            return
+        } else if status != errSecSuccess {
+            throw errorFromStatus(status)
         }
-        return nil
     }
     
-//    MARK: - Get String
-    /// Retrieves a `String` from the keychain with the specified key
-    /// - parameter key: The key of the `String` to be retrieved
-    /// - returns: The `String` from the keychain
-    public func stringForKey(key: String) throws -> String? {
-        if let data = try dataForKey(key) {
-            return NSString(data: data, encoding: NSUTF8StringEncoding) as? String
+    //    MARK: - Update data
+    /// Updates the data associated with the specified key
+    /// - parameter data: The updated data
+    /// - parameter key: The key of the item to be updated
+    public func updateData(data: NSData, forKey key: String) throws {
+        let query = try getQueryDictionaryForKey(key)
+        let updateQuery = [secValueData: data]
+        
+        let status = SecItemUpdate(query, updateQuery)
+        if status != errSecSuccess {
+            throw errorFromStatus(status)
         }
-        return nil
     }
     
     /// Returns a list of the keys of all the items saved for the store account
@@ -185,26 +155,42 @@ public class KeychainStore: NSObject {
         throw errorFromStatus(status)
     }
     
-//    MARK: - Set data
-    /// Adds a `NSData` object to the keychain with the specified key
-    /// - parameter data: The data to be stored
-    /// - parameter key: The key of the item to be stored
-    /// - parameter accessibility: The accessibility type of the data
-    public func setData(data: NSData, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
-        var query = try getQueryDictionaryForKey(key)
-        query[secValueData] = data
-        query[secAttrAccessible] = accessibility.rawValue
-        
-        let status = SecItemAdd(query, nil)
-        if status == errSecDuplicateItem {
-            try self.updateData(data, forKey: key)
-            return
-        } else if status != errSecSuccess {
-            throw errorFromStatus(status)
+    //    MARK: - Delete
+    /// Remove item with a specified key.
+    /// - parameter key: The key of the item to be removed
+    public func deleteItemForKey(key: String) throws {
+        let query = try getQueryDictionaryForKey(key)
+        let status = SecItemDelete(query)
+        if status != errSecSuccess {
+            throw KeychainStoreError.UnexpectedErrorCode(code: status)
         }
     }
     
-//    MARK: - Set string
+    //    MARK: - Delete all
+    /// Remove all the items for the store account
+    public func deleteAllItems() throws {
+        let keys = try allKeys()
+        for key in keys {
+            do {
+                try deleteItemForKey(key)
+            } catch {}
+        }
+    }
+    
+}
+
+public class KeychainStringStore: AbstractKeychainStore {
+    
+    /// Retrieves a `String` from the keychain with the specified key
+    /// - parameter key: The key of the `String` to be retrieved
+    /// - returns: The `String` from the keychain
+    public func stringForKey(key: String) throws -> String? {
+        if let data = try dataForKey(key) {
+            return NSString(data: data, encoding: NSUTF8StringEncoding) as? String
+        }
+        return nil
+    }
+    
     /// Adds a `String` to the keychain with the specified key
     /// - parameter string: The `String` to be stored
     /// - parameter key: The key of the item to be stored
@@ -217,62 +203,7 @@ public class KeychainStore: NSObject {
         }
     }
     
-//    MARK: - Set object
-    /// Adds an object to the keychain with the specified key
-    /// - parameter object: The object to be stored
-    /// - parameter key: The key of the item to be stored
-    /// - parameter accessibility: The accessibility type of the object
-    public func setObject(object: NSCoding, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
-        let data = NSKeyedArchiver.archivedDataWithRootObject(object)
-        try setData(data, forKey: key, accessibility: accessibility)
-    }
-    
-//    MARK: - Delete
-    /// Remove item with a specified key.
-    /// - parameter key: The key of the item to be removed
-    public func deleteItemForKey(key: String) throws {
-        let query = try getQueryDictionaryForKey(key)
-        let status = SecItemDelete(query)
-        if status != errSecSuccess {
-            throw KeychainStoreError.UnexpectedErrorCode(code: status)
-        }
-    }
-    
-//    MARK: - Delete all
-    /// Remove all the items for the store account
-    public func deleteAllItems() throws {
-        let keys = try allKeys()
-        for key in keys {
-            do {
-                try deleteItemForKey(key)
-            } catch {}
-        }
-    }
-    
-//    MARK: - Update data
-    /// Updates the data associated with the specified key
-    /// - parameter data: The updated data
-    /// - parameter key: The key of the item to be updated
-    public func updateData(data: NSData, forKey key: String) throws {
-        let query = try getQueryDictionaryForKey(key)
-        let updateQuery = [secValueData: data]
-            
-        let status = SecItemUpdate(query, updateQuery)
-        if status != errSecSuccess {
-            throw errorFromStatus(status)
-        }
-    }
-    
-//    MARK: - Update object
-    /// Updates the object associated with the specified key
-    /// - parameter object: The updated object
-    /// - parameter key: The key of the object to be updated
-    public func updateObject(object: AnyObject, forKey key: String) throws {
-        let data = NSKeyedArchiver.archivedDataWithRootObject(object)
-        try updateData(data, forKey: key)
-    }
-    
-//    MARK: - Update string
+    //    MARK: - Update string
     /// Updates the string associated with the specified key
     /// - parameter string: The `String` object
     /// - parameter key: The key of the `String` to be updated
@@ -283,10 +214,51 @@ public class KeychainStore: NSObject {
             throw KeychainStoreError.InvalidString
         }
     }
+}
+
+public class KeychainStore<T: NSCoding>: AbstractKeychainStore {
+    
+    public required init(account: String) throws {
+        try super.init(account: account)
+    }
+    
+    public required init(account: String, accessGroup: String) throws {
+        try super.init(account: account, accessGroup: accessGroup)
+    }
+  
+//    MARK: - Get object
+    /// Retrieves an object from the keychain with the specified key
+    /// - parameter key: The key of the item to be retrieved
+    /// - returns: The object from the keychain
+    public func objectForKey(key: String) throws -> T? {
+        if let data = try dataForKey(key) {
+            return NSKeyedUnarchiver.unarchiveObjectWithData(data) as? T
+        }
+        return nil
+    }
+    
+//    MARK: - Set object
+    /// Adds an object to the keychain with the specified key
+    /// - parameter object: The object to be stored
+    /// - parameter key: The key of the item to be stored
+    /// - parameter accessibility: The accessibility type of the object
+    public func setObject(object: T, forKey key: String, accessibility: KeychainAccessibility = KeychainAccessibility.WhenUnlocked) throws {
+        let data = NSKeyedArchiver.archivedDataWithRootObject(object)
+        try setData(data, forKey: key, accessibility: accessibility)
+    }
+    
+//    MARK: - Update object
+    /// Updates the object associated with the specified key
+    /// - parameter object: The updated object
+    /// - parameter key: The key of the object to be updated
+    public func updateObject(object: T, forKey key: String) throws {
+        let data = NSKeyedArchiver.archivedDataWithRootObject(object)
+        try updateData(data, forKey: key)
+    }
     
 }
 
-func errorFromStatus(staus: OSStatus) -> KeychainStoreError {
+private func errorFromStatus(staus: OSStatus) -> KeychainStoreError {
     switch staus {
     case errSecItemNotFound:
         return KeychainStoreError.ItemNotFound

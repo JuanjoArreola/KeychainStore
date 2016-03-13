@@ -14,7 +14,7 @@ public final class Configuration {
         let bundle = NSBundle(forClass: Configuration.self)
         let path = bundle.pathForResource("keychain_properties", ofType: "plist")
         return NSDictionary(contentsOfFile: path!) as! [String:AnyObject]
-        }()
+    }()
     
     private static let properties: [String: AnyObject]? = {
         if let path = NSBundle.mainBundle().pathForResource("KeychainStoreProperties", ofType: "plist") {
