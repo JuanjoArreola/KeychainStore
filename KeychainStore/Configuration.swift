@@ -11,13 +11,13 @@ import Foundation
 public final class Configuration {
     
     private static let defaultProperties: [String: AnyObject] = {
-        let bundle = NSBundle(forClass: Configuration.self)
-        let path = bundle.pathForResource("keychain_properties", ofType: "plist")
+        let bundle = Bundle(for: Configuration.self)
+        let path = bundle.path(forResource: "keychain_properties", ofType: "plist")
         return NSDictionary(contentsOfFile: path!) as! [String:AnyObject]
     }()
     
     private static let properties: [String: AnyObject]? = {
-        if let path = NSBundle.mainBundle().pathForResource("KeychainStoreProperties", ofType: "plist") {
+        if let path = Bundle.main.path(forResource: "KeychainStoreProperties", ofType: "plist") {
             return NSDictionary(contentsOfFile: path) as? [String: AnyObject]
         }
         return nil

@@ -30,6 +30,7 @@ class ObjectStoreTests: XCTestCase {
             let card = Card(number: "4111111111111111", cardholder: "Me")
             try store.setObject(card, forKey: "test")
         } catch {
+            print(error)
             XCTFail()
         }
     }
@@ -79,7 +80,7 @@ class ObjectStoreTests: XCTestCase {
             let updatedCard = Card(number: "4222222222222222", cardholder: "Me")
             try store.updateObject(updatedCard, forKey: "test")
             XCTFail()
-        } catch KeychainStoreError.ItemNotFound {
+        } catch KeychainStoreError.itemNotFound {
         } catch {
             XCTFail()
         }
@@ -88,7 +89,7 @@ class ObjectStoreTests: XCTestCase {
     func testSaveAndGetStringWithAccessibility() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "test", accessibility: KeychainAccessibility.WhenPasscodeSetThisDeviceOnly)
+            try store.setObject(card, forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
             
             let result = try store.objectForKey("test")
             XCTAssertNotNil(result)
@@ -126,13 +127,13 @@ class Card: NSObject, NSCoding {
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        guard let number = aDecoder.decodeObjectForKey("number") as? String else { return nil }
-        guard let cardholder = aDecoder.decodeObjectForKey("cardholder") as? String else { return nil }
+        guard let number = aDecoder.decodeObject(forKey: "number") as? String else { return nil }
+        guard let cardholder = aDecoder.decodeObject(forKey: "cardholder") as? String else { return nil }
         self.init(number: number, cardholder: cardholder)
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(number, forKey: "number")
-        aCoder.encodeObject(cardholder, forKey: "cardholder")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(number, forKey: "number")
+        aCoder.encode(cardholder, forKey: "cardholder")
     }
 }

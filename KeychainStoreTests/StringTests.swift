@@ -72,7 +72,7 @@ class StringTests: XCTestCase {
         do {
             try store.updateString("Updated string", forKey: "NotAKey")
             XCTFail()
-        } catch KeychainStoreError.ItemNotFound {
+        } catch KeychainStoreError.itemNotFound {
         } catch {
             XCTFail()
         }
@@ -80,7 +80,7 @@ class StringTests: XCTestCase {
     
     func testSaveAndGetStringWithAccessibility() {
         do {
-            try store.setString("whenPasscode", forKey: "test", accessibility: KeychainAccessibility.WhenPasscodeSetThisDeviceOnly)
+            try store.setString("whenPasscode", forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
             
             let result = try store.stringForKey("test")
             XCTAssertNotNil(result)
