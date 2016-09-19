@@ -27,17 +27,18 @@ class StringTests: XCTestCase {
     
     func testSaveString() {
         do {
-            try store.setString("test", forKey: "This is a test")
+            try store.set(string: "test", forKey: "This is a test")
         } catch {
             XCTFail()
+            print(error)
         }
     }
     
     func testGetString() {
         do {
-            try store.setString("This is a Test", forKey: "test")
+            try store.set(string: "This is a Test", forKey: "test")
             
-            let result = try store.stringForKey("test")
+            let result = try store.string(forKey: "test")
             XCTAssertNotNil(result)
         } catch {
             XCTFail()
@@ -46,10 +47,10 @@ class StringTests: XCTestCase {
     
     func testUpdateString() {
         do {
-            try store.setString("This is a Test", forKey: "test")
-            try store.updateString("Change test", forKey: "test")
+            try store.set(string: "This is a Test", forKey: "test")
+            try store.update(string: "Change test", forKey: "test")
             
-            let result = try store.stringForKey("test")
+            let result = try store.string(forKey: "test")
             XCTAssertNotNil(result)
             XCTAssertEqual(result!, "Change test")
         } catch {
@@ -59,9 +60,9 @@ class StringTests: XCTestCase {
     
     func testDeleteString() {
         do {
-            try store.setString("This is a Test", forKey: "test")
-            try store.deleteItemForKey("test")
-            let result = try store.stringForKey("test")
+            try store.set(string: "This is a Test", forKey: "test")
+            try store.deleteItem(forKey: "test")
+            let result = try store.string(forKey: "test")
             XCTAssertNil(result)
         } catch {
             XCTFail()
@@ -70,7 +71,7 @@ class StringTests: XCTestCase {
     
     func testUpdateNonexistentString() {
         do {
-            try store.updateString("Updated string", forKey: "NotAKey")
+            try store.update(string: "Updated string", forKey: "NotAKey")
             XCTFail()
         } catch KeychainStoreError.itemNotFound {
         } catch {
@@ -80,9 +81,9 @@ class StringTests: XCTestCase {
     
     func testSaveAndGetStringWithAccessibility() {
         do {
-            try store.setString("whenPasscode", forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
+            try store.set(string: "whenPasscode", forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
             
-            let result = try store.stringForKey("test")
+            let result = try store.string(forKey: "test")
             XCTAssertNotNil(result)
         } catch {
             XCTFail("Error saving object")
@@ -91,11 +92,11 @@ class StringTests: XCTestCase {
     
     func testGetAllKeys() {
         do {
-            try store.setString("test 1", forKey: "key1")
-            try store.setString("test 2", forKey: "key2")
-            try store.setString("test 3", forKey: "key3")
+            try store.set(string: "test 1", forKey: "key1")
+            try store.set(string: "test 2", forKey: "key2")
+            try store.set(string: "test 3", forKey: "key3")
             
-            try store.deleteItemForKey("key2")
+            try store.deleteItem(forKey: "key2")
             let keys = try store.allKeys()
             XCTAssertEqual(keys, ["key1", "key3"])
         } catch {

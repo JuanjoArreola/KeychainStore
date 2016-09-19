@@ -28,7 +28,7 @@ class ObjectStoreTests: XCTestCase {
     func testSaveObject() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "test")
+            try store.set(object: card, forKey: "test")
         } catch {
             print(error)
             XCTFail()
@@ -38,9 +38,9 @@ class ObjectStoreTests: XCTestCase {
     func testGetObject() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "test")
+            try store.set(object: card, forKey: "test")
             
-            let result = try store.objectForKey("test")
+            let result = try store.object(forKey: "test")
             XCTAssertNotNil(result)
         } catch {
             XCTFail()
@@ -50,12 +50,12 @@ class ObjectStoreTests: XCTestCase {
     func testUpdateObject() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "test")
+            try store.set(object: card, forKey: "test")
             
             let updatedCard = Card(number: "4222222222222222", cardholder: "Me")
-            try store.updateObject(updatedCard, forKey: "test")
+            try store.update(object: updatedCard, forKey: "test")
             
-            let result = try store.objectForKey("test")
+            let result = try store.object(forKey: "test")
             XCTAssertNotNil(result)
             XCTAssertEqual(result!.number, updatedCard.number)
         } catch {
@@ -66,9 +66,9 @@ class ObjectStoreTests: XCTestCase {
     func testDeleteString() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "test")
-            try store.deleteItemForKey("test")
-            let result = try store.objectForKey("test")
+            try store.set(object: card, forKey: "test")
+            try store.deleteItem(forKey: "test")
+            let result = try store.object(forKey: "test")
             XCTAssertNil(result)
         } catch {
             XCTFail()
@@ -78,7 +78,7 @@ class ObjectStoreTests: XCTestCase {
     func testUpdateNonexistentString() {
         do {
             let updatedCard = Card(number: "4222222222222222", cardholder: "Me")
-            try store.updateObject(updatedCard, forKey: "test")
+            try store.update(object: updatedCard, forKey: "test")
             XCTFail()
         } catch KeychainStoreError.itemNotFound {
         } catch {
@@ -89,9 +89,9 @@ class ObjectStoreTests: XCTestCase {
     func testSaveAndGetStringWithAccessibility() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
+            try store.set(object: card, forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
             
-            let result = try store.objectForKey("test")
+            let result = try store.object(forKey: "test")
             XCTAssertNotNil(result)
         } catch {
             XCTFail("Error saving object")
@@ -101,11 +101,11 @@ class ObjectStoreTests: XCTestCase {
     func testGetAllKeys() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.setObject(card, forKey: "key1")
-            try store.setObject(card, forKey: "key2")
-            try store.setObject(card, forKey: "key3")
+            try store.set(object: card, forKey: "key1")
+            try store.set(object: card, forKey: "key2")
+            try store.set(object: card, forKey: "key3")
             
-            try store.deleteItemForKey("key2")
+            try store.deleteItem(forKey: "key2")
             let keys = try store.allKeys()
             XCTAssertEqual(keys, ["key1", "key3"])
         } catch {
