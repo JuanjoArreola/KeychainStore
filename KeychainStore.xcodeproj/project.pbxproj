@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81A117971E930CAB00F51D29 /* AbstractKeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A117961E930CAB00F51D29 /* AbstractKeychainStore.swift */; };
+		81A117991E930D2900F51D29 /* KeychainAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A117981E930D2900F51D29 /* KeychainAccessibility.swift */; };
+		81A1179B1E930D4A00F51D29 /* KeychainStringStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A1179A1E930D4A00F51D29 /* KeychainStringStore.swift */; };
+		81A1179D1E930D5E00F51D29 /* KeychainStoreError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A1179C1E930D5E00F51D29 /* KeychainStoreError.swift */; };
 		81D5C3E51C948861009C6764 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D5C3E41C948861009C6764 /* StringTests.swift */; };
 		81D5C3E71C94BA3E009C6764 /* ObjectStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D5C3E61C94BA3E009C6764 /* ObjectStoreTests.swift */; };
 		81E250951B7D5490009F72A2 /* KeychainStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 81E250941B7D5490009F72A2 /* KeychainStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -27,6 +31,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		81A117961E930CAB00F51D29 /* AbstractKeychainStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractKeychainStore.swift; sourceTree = "<group>"; };
+		81A117981E930D2900F51D29 /* KeychainAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainAccessibility.swift; sourceTree = "<group>"; };
+		81A1179A1E930D4A00F51D29 /* KeychainStringStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStringStore.swift; sourceTree = "<group>"; };
+		81A1179C1E930D5E00F51D29 /* KeychainStoreError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainStoreError.swift; sourceTree = "<group>"; };
 		81D5C3E41C948861009C6764 /* StringTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		81D5C3E61C94BA3E009C6764 /* ObjectStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectStoreTests.swift; sourceTree = "<group>"; };
 		81E250911B7D5490009F72A2 /* KeychainStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = KeychainStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -84,6 +92,10 @@
 				81EB49441B8B877700FC5CC7 /* Configuration.swift */,
 				81EB49461B8B880600FC5CC7 /* keychain_properties.plist */,
 				81E250961B7D5490009F72A2 /* Info.plist */,
+				81A117961E930CAB00F51D29 /* AbstractKeychainStore.swift */,
+				81A117981E930D2900F51D29 /* KeychainAccessibility.swift */,
+				81A1179A1E930D4A00F51D29 /* KeychainStringStore.swift */,
+				81A1179C1E930D5E00F51D29 /* KeychainStoreError.swift */,
 			);
 			path = KeychainStore;
 			sourceTree = "<group>";
@@ -226,7 +238,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81A117971E930CAB00F51D29 /* AbstractKeychainStore.swift in Sources */,
 				81EB49451B8B877700FC5CC7 /* Configuration.swift in Sources */,
+				81A1179B1E930D4A00F51D29 /* KeychainStringStore.swift in Sources */,
+				81A117991E930D2900F51D29 /* KeychainAccessibility.swift in Sources */,
+				81A1179D1E930D5E00F51D29 /* KeychainStoreError.swift in Sources */,
 				81E250AC1B7D54B2009F72A2 /* KeychainStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
