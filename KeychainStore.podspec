@@ -8,8 +8,7 @@ Pod::Spec.new do |s|
 
   s.platform     = :ios, "8.0"
   s.source       = { :git => "https://github.com/JuanjoArreola/KeychainStore.git", :tag => "#{s.version}" }
-  s.source_files = "KeychainStore/*.swift"
-  s.resources    = "KeychainStore/keychain_properties.plist"
+  s.source_files = "Sources/KeychainStore/*.swift"
 
   s.requires_arc = true
 end
