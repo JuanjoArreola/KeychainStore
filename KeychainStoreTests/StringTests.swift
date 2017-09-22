@@ -11,12 +11,10 @@ import KeychainStore
 
 class StringTests: XCTestCase {
     
-    var store: KeychainStringStore!
+    var store = KeychainStringStore(account: "test")
     
     override func setUp() {
         super.setUp()
-        
-        self.store = try! KeychainStringStore(account: "test")
     }
     
     override func tearDown() {

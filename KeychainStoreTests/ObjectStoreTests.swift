@@ -16,7 +16,7 @@ class ObjectStoreTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        self.store = try! KeychainStore<Card>(account: "test")
+        self.store = KeychainStore<Card>(account: "test")
     }
     
     override func tearDown() {
@@ -28,7 +28,7 @@ class ObjectStoreTests: XCTestCase {
     func testSaveObject() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test")
+            try store.set(object: card, forKey: "test4")
         } catch {
             print(error)
             XCTFail()
@@ -116,7 +116,7 @@ class ObjectStoreTests: XCTestCase {
 }
 
 
-class Card: NSObject, NSCoding {
+class Card: Codable {
     
     var number: String!
     var cardholder: String!
@@ -124,16 +124,5 @@ class Card: NSObject, NSCoding {
     required init(number: String, cardholder: String) {
         self.number = number
         self.cardholder = cardholder
-    }
-    
-    required convenience init?(coder aDecoder: NSCoder) {
-        guard let number = aDecoder.decodeObject(forKey: "number") as? String else { return nil }
-        guard let cardholder = aDecoder.decodeObject(forKey: "cardholder") as? String else { return nil }
-        self.init(number: number, cardholder: cardholder)
-    }
-    
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(number, forKey: "number")
-        aCoder.encode(cardholder, forKey: "cardholder")
     }
 }

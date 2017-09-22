@@ -8,16 +8,17 @@
 
 import Foundation
 
-open class KeychainStore<T: NSCoding>: AbstractKeychainStore {
+open class KeychainStore<T: Codable>: AbstractKeychainStore {
+    
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
   
     /// Retrieves an object from the keychain with the specified key
     /// - parameter key: The key of the item to be retrieved
     /// - returns: The object from the keychain
     open func object(forKey key: String) throws -> T? {
-        if let data = try data(forKey: key) {
-            return NSKeyedUnarchiver.unarchiveObject(with: data) as? T
-        }
-        return nil
+        guard let data = try data(forKey: key) else { return nil }
+        return try decoder.decode(T.self, from: data)
     }
     
     /// Adds an object to the keychain with the specified key
@@ -25,7 +26,7 @@ open class KeychainStore<T: NSCoding>: AbstractKeychainStore {
     /// - parameter key: The key of the item to be stored
     /// - parameter accessibility: The accessibility type of the object
     open func set(object: T, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
-        let data = NSKeyedArchiver.archivedData(withRootObject: object)
+        let data = try encoder.encode(object)
         try set(data: data, forKey: key, accessibility: accessibility)
     }
     
@@ -33,7 +34,7 @@ open class KeychainStore<T: NSCoding>: AbstractKeychainStore {
     /// - parameter object: The updated object
     /// - parameter key: The key of the object to be updated
     open func update(object: T, forKey key: String) throws {
-        let data = NSKeyedArchiver.archivedData(withRootObject: object)
+        let data = try encoder.encode(object)
         try update(data: data, forKey: key)
     }
     

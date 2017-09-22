@@ -27,35 +27,22 @@ open class AbstractKeychainStore {
     
     //    MARK: - Initialization
     
-    public required init(account: String) throws {
-        self.account = account
-        if account.isEmpty {
-            throw KeychainStoreError.invalidAccount
-        }
-    }
-    
-    public required init(account: String, accessGroup: String) throws {
+    public required init(account: String, accessGroup: String? = nil){
         self.account = account
         self.accessGroup = accessGroup
-        if account.isEmpty {
-            throw KeychainStoreError.invalidAccount
-        }
-        if accessGroup.isEmpty {
-            throw KeychainStoreError.invalidAccessGroup
-        }
     }
     
     //    MARK: - create query
     
-    func getQueryDictionary(forKey key: String) throws -> [String: Any] {
-        var queryDictionary: [String: Any] = [
+    func keychainQuery(forKey key: String) throws -> [String: Any] {
+        var query: [String: Any] = [
             secClass: kSecClassGenericPassword,
             secAttrAcount: account,
             secAttrService: key]
         if let accessGroup = accessGroup {
-            queryDictionary[secAttrAccessGroup] = accessGroup
+            query[secAttrAccessGroup] = accessGroup
         }
-        return queryDictionary
+        return query
     }
     
     //    MARK: - Get data
@@ -64,8 +51,7 @@ open class AbstractKeychainStore {
     ///   - key: The key of the item to be retrieved
     /// - Returns: A `Data` object from the keychain
     open func data(forKey key: String) throws -> Data? {
-        var query = try getQueryDictionary(forKey: key)
-        
+        var query = try keychainQuery(forKey: key)
         query[secMatchLimit] = kSecMatchLimitOne
         query[secReturnData] = kCFBooleanTrue
         
@@ -78,7 +64,7 @@ open class AbstractKeychainStore {
         } else if status == errSecItemNotFound {
             return nil
         }
-        throw error(fromStatus: status)
+        throw error(from: status)
     }
     
     //    MARK: - Set data
@@ -88,7 +74,7 @@ open class AbstractKeychainStore {
     ///   - key: The key of the item to be stored
     ///   - accessibility: The accessibility type of the data
     open func set(data: Data, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
-        var query = try getQueryDictionary(forKey: key)
+        var query = try keychainQuery(forKey: key)
         query[secValueData] = data
         query[secAttrAccessible] = accessibility.rawValue
         
@@ -97,7 +83,7 @@ open class AbstractKeychainStore {
             try self.update(data: data, forKey: key)
             return
         } else if status != errSecSuccess {
-            throw error(fromStatus: status)
+            throw error(from: status)
         }
     }
     
@@ -107,12 +93,12 @@ open class AbstractKeychainStore {
     ///   - data: The updated data
     ///   - key: The key of the item to be updated
     open func update(data: Data, forKey key: String) throws {
-        let query = try getQueryDictionary(forKey: key)
+        let query = try keychainQuery(forKey: key)
         let updateQuery = [secValueData: data]
         
         let status = SecItemUpdate(query as CFDictionary, updateQuery as CFDictionary)
         if status != errSecSuccess {
-            throw error(fromStatus: status)
+            throw error(from: status)
         }
     }
     
@@ -141,17 +127,17 @@ open class AbstractKeychainStore {
         else if status == errSecItemNotFound {
             return []
         }
-        throw error(fromStatus: status)
+        throw error(from: status)
     }
     
     //    MARK: - Delete
     /// Remove item with a specified key.
     /// - parameter key: The key of the item to be removed
     open func deleteItem(forKey key: String) throws {
-        let query = try getQueryDictionary(forKey: key)
+        let query = try keychainQuery(forKey: key)
         let status = SecItemDelete(query as CFDictionary)
         if status != errSecSuccess {
-            throw KeychainStoreError.unexpectedErrorCode(code: status)
+            throw error(from: status)
         }
     }
     
@@ -166,7 +152,7 @@ open class AbstractKeychainStore {
     
 }
 
-internal func error(fromStatus staus: OSStatus) -> KeychainStoreError {
+func error(from staus: OSStatus) -> KeychainStoreError {
     switch staus {
     case errSecItemNotFound:
         return KeychainStoreError.itemNotFound
