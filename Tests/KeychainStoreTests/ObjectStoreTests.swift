@@ -89,7 +89,7 @@ class ObjectStoreTests: XCTestCase {
     func testSaveAndGetStringWithAccessibility() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
+            try store.set(object: card, forKey: "test", accessibility: .whenPasscodeSetThisDeviceOnly)
             
             let result = try store.object(forKey: "test")
             XCTAssertNotNil(result)
