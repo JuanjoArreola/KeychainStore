@@ -8,9 +8,9 @@ Swift 3 Framework to access the Keychain
 
 ## Usage
 
-`KeychainStore<T: NSCoding>` is a generic class that stores instances of classes that conform to the `NSCoding` protocol
+`KeychainStore<T: Codable>` is a generic class that stores instances of classes that conform to the `Codable` protocol
 ```swift
-let store = try KeychainStore<Card>(account: "test")
+let store = KeychainStore<Card>(account: "test")
 let card = Card(number: "4111111111111111", name: "Me")
 
 // save card:
@@ -19,7 +19,7 @@ try store.set(object: card, forKey: "my card")
 try store.set(object: card, forKey: "my card", accessibility: .whenPasscodeSetThisDeviceOnly)
 
 // get card
-let result = try store.object(forKey: "my card")
+let card = try store.object(forKey: "my card")
 ```
 
 Additionally, the class `KeychainStringStore` saves `String` instances in the Keychain.
