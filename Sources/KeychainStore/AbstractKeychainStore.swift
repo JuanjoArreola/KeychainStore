@@ -122,7 +122,7 @@ open class AbstractKeychainStore {
             guard let items = result as? [[String: Any]] else {
                 return []
             }
-            return items.flatMap({ $0[secAttrService] as? String })
+            return items.compactMap({ $0[secAttrService] as? String })
         }
         else if status == errSecItemNotFound {
             return []

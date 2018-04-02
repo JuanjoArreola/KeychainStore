@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "KeychainStore"
-  s.version      = "3.0.0"
+  s.version      = "3.0.1"
   s.summary      = "Swift Framework to access the Keychain in iOS"
   s.homepage     = "https://github.com/JuanjoArreola/KeychainStore"
   s.license      = { :type => "MIT", :file => "LICENSE" }
