@@ -22,8 +22,8 @@ private let secReturnAttributes = kSecReturnAttributes as String
 
 open class AbstractKeychainStore {
     
-    open let account: String
-    open private(set) var accessGroup: String?
+    public let account: String
+    public private(set) var accessGroup: String?
     
     //    MARK: - Initialization
     
