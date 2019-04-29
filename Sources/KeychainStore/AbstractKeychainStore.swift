@@ -67,6 +67,23 @@ open class AbstractKeychainStore {
         throw error(from: status)
     }
     
+    public func hasKey(_ key: String) throws -> Bool {
+        var query = try keychainQuery(forKey: key)
+        query[secMatchLimit] = kSecMatchLimitOne
+        query[secReturnData] = kCFBooleanFalse
+        
+        var result: AnyObject?
+        let status = withUnsafeMutablePointer(to: &result) {
+            SecItemCopyMatching(query as CFDictionary, UnsafeMutablePointer($0))
+        }
+        if status == errSecSuccess {
+            return true
+        } else if status == errSecItemNotFound {
+            return false
+        }
+        throw error(from: status)
+    }
+    
     //    MARK: - Set data
     /// Adds a `Data` object to the keychain with the specified key
     /// - Parameters:

@@ -47,6 +47,27 @@ class ObjectStoreTests: XCTestCase {
         }
     }
     
+    func testHasObject() {
+        do {
+            let card = Card(number: "4111111111111111", cardholder: "Me")
+            try store.set(object: card, forKey: "test")
+            
+            let result = try store.hasKey("test")
+            XCTAssertTrue(result)
+        } catch {
+            XCTFail()
+        }
+    }
+    
+    func testNotHasObject() {
+        do {
+            let result = try store.hasKey("test")
+            XCTAssertFalse(result)
+        } catch {
+            XCTFail()
+        }
+    }
+    
     func testUpdateObject() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
