@@ -1,10 +1,16 @@
 # KeychainStore
-Swift 3 Framework to access the Keychain
+Swift 5 Framework to access the Keychain
 
 ![Cocoapods](https://img.shields.io/cocoapods/v/KeychainStore.svg)
 ![Platform](https://img.shields.io/cocoapods/p/KeychainStore.svg)
 ![License](https://img.shields.io/cocoapods/l/KeychainStore.svg)
 [![codebeat badge](https://codebeat.co/badges/8f7dfcf7-6beb-49a1-95f8-02363be219ee)](https://codebeat.co/projects/github-com-juanjoarreola-keychainstore-master)
+
+
+| Swift version | Latest version |
+| :-------------: | :---------------: |
+|   4.1              |     3.0.4            |
+|   5.0              |     3.1.0            |
 
 ## Usage
 

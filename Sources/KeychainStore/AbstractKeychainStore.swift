@@ -125,7 +125,7 @@ open class AbstractKeychainStore {
         var query: [String: Any] = [
             secClass: kSecClassGenericPassword,
             secAttrAcount: account,
-            secReturnAttributes: kCFBooleanTrue,
+            secReturnAttributes: kCFBooleanTrue as Any,
             secMatchLimit: kSecMatchLimitAll]
         if let accessGroup = accessGroup {
             query[secAttrAccessGroup] = accessGroup
