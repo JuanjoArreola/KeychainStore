@@ -9,7 +9,7 @@
 import XCTest
 import KeychainStore
 
-class ObjectStoreTests: XCTestCase {
+class InstanceStoreTests: XCTestCase {
     
     var store: KeychainStore<Card>!
     
@@ -25,32 +25,32 @@ class ObjectStoreTests: XCTestCase {
         super.tearDown()
     }
     
-    func testSaveObject() {
+    func testSaveInstance() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test4")
+            try store.set(card, forKey: "test4")
         } catch {
             print(error)
             XCTFail()
         }
     }
     
-    func testGetObject() {
+    func testGetInstance() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test")
+            try store.set(card, forKey: "test")
             
-            let result = try store.object(forKey: "test")
+            let result = try store.instance(forKey: "test")
             XCTAssertNotNil(result)
         } catch {
             XCTFail()
         }
     }
     
-    func testHasObject() {
+    func testHasInstance() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test")
+            try store.set(card, forKey: "test")
             
             let result = try store.hasKey("test")
             XCTAssertTrue(result)
@@ -59,7 +59,7 @@ class ObjectStoreTests: XCTestCase {
         }
     }
     
-    func testNotHasObject() {
+    func testNotHasInstance() {
         do {
             let result = try store.hasKey("test")
             XCTAssertFalse(result)
@@ -68,15 +68,15 @@ class ObjectStoreTests: XCTestCase {
         }
     }
     
-    func testUpdateObject() {
+    func testUpdateInstance() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test")
+            try store.set(card, forKey: "test")
             
             let updatedCard = Card(number: "4222222222222222", cardholder: "Me")
-            try store.update(object: updatedCard, forKey: "test")
+            try store.update(updatedCard, forKey: "test")
             
-            let result = try store.object(forKey: "test")
+            let result = try store.instance(forKey: "test")
             XCTAssertNotNil(result)
             XCTAssertEqual(result!.number, updatedCard.number)
         } catch {
@@ -87,9 +87,9 @@ class ObjectStoreTests: XCTestCase {
     func testDeleteString() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test")
+            try store.set(card, forKey: "test")
             try store.deleteItem(forKey: "test")
-            let result = try store.object(forKey: "test")
+            let result = try store.instance(forKey: "test")
             XCTAssertNil(result)
         } catch {
             XCTFail()
@@ -99,7 +99,7 @@ class ObjectStoreTests: XCTestCase {
     func testUpdateNonexistentString() {
         do {
             let updatedCard = Card(number: "4222222222222222", cardholder: "Me")
-            try store.update(object: updatedCard, forKey: "test")
+            try store.update(updatedCard, forKey: "test")
             XCTFail()
         } catch KeychainStoreError.itemNotFound {
         } catch {
@@ -110,9 +110,9 @@ class ObjectStoreTests: XCTestCase {
     func testSaveAndGetStringWithAccessibility() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "test", accessibility: .whenPasscodeSetThisDeviceOnly)
+            try store.set(card, forKey: "test", accessibility: .whenPasscodeSetThisDeviceOnly)
             
-            let result = try store.object(forKey: "test")
+            let result = try store.instance(forKey: "test")
             XCTAssertNotNil(result)
         } catch {
             XCTFail("Error saving object")
@@ -122,9 +122,9 @@ class ObjectStoreTests: XCTestCase {
     func testGetAllKeys() {
         do {
             let card = Card(number: "4111111111111111", cardholder: "Me")
-            try store.set(object: card, forKey: "key1")
-            try store.set(object: card, forKey: "key2")
-            try store.set(object: card, forKey: "key3")
+            try store.set(card, forKey: "key1")
+            try store.set(card, forKey: "key2")
+            try store.set(card, forKey: "key3")
             
             try store.deleteItem(forKey: "key2")
             let keys = try store.allKeys()

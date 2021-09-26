@@ -32,13 +32,14 @@ open class AbstractKeychainStore {
         self.accessGroup = accessGroup
     }
     
-    //    MARK: - create query
+    //    MARK: - Create query
     
-    func keychainQuery(forKey key: String) throws -> [String: Any] {
+    private func keychainQuery(forKey key: String) -> [String: Any] {
         var query: [String: Any] = [
             secClass: kSecClassGenericPassword,
             secAttrAcount: account,
-            secAttrService: key]
+            secAttrService: key
+        ]
         if let accessGroup = accessGroup {
             query[secAttrAccessGroup] = accessGroup
         }
@@ -51,7 +52,7 @@ open class AbstractKeychainStore {
     ///   - key: The key of the item to be retrieved
     /// - Returns: A `Data` object from the keychain
     open func data(forKey key: String) throws -> Data? {
-        var query = try keychainQuery(forKey: key)
+        var query = keychainQuery(forKey: key)
         query[secMatchLimit] = kSecMatchLimitOne
         query[secReturnData] = kCFBooleanTrue
         
@@ -68,7 +69,7 @@ open class AbstractKeychainStore {
     }
     
     public func hasKey(_ key: String) throws -> Bool {
-        var query = try keychainQuery(forKey: key)
+        var query = keychainQuery(forKey: key)
         query[secMatchLimit] = kSecMatchLimitOne
         query[secReturnData] = kCFBooleanFalse
         
@@ -91,14 +92,13 @@ open class AbstractKeychainStore {
     ///   - key: The key of the item to be stored
     ///   - accessibility: The accessibility type of the data
     open func set(data: Data, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
-        var query = try keychainQuery(forKey: key)
+        var query = keychainQuery(forKey: key)
         query[secValueData] = data
         query[secAttrAccessible] = accessibility.rawValue
         
         let status = SecItemAdd(query as CFDictionary, nil)
         if status == errSecDuplicateItem {
             try self.update(data: data, forKey: key)
-            return
         } else if status != errSecSuccess {
             throw error(from: status)
         }
@@ -110,7 +110,7 @@ open class AbstractKeychainStore {
     ///   - data: The updated data
     ///   - key: The key of the item to be updated
     open func update(data: Data, forKey key: String) throws {
-        let query = try keychainQuery(forKey: key)
+        let query = keychainQuery(forKey: key)
         let updateQuery = [secValueData: data]
         
         let status = SecItemUpdate(query as CFDictionary, updateQuery as CFDictionary)
@@ -151,7 +151,7 @@ open class AbstractKeychainStore {
     /// Remove item with a specified key.
     /// - parameter key: The key of the item to be removed
     open func deleteItem(forKey key: String) throws {
-        let query = try keychainQuery(forKey: key)
+        let query = keychainQuery(forKey: key)
         let status = SecItemDelete(query as CFDictionary)
         if status != errSecSuccess {
             throw error(from: status)

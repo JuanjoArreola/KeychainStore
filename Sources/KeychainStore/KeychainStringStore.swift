@@ -8,12 +8,12 @@
 
 import Foundation
 
-open class KeychainStringStore: AbstractKeychainStore {
+public final class KeychainStringStore: AbstractKeychainStore {
     
     /// Retrieves a `String` from the keychain with the specified key
     /// - parameter key: The key of the `String` to be retrieved
     /// - returns: The `String` from the keychain
-    open func string(forKey key: String) throws -> String? {
+    public func string(forKey key: String) throws -> String? {
         if let data = try data(forKey: key) {
             return String(data: data, encoding: String.Encoding.utf8)
         }
@@ -24,7 +24,7 @@ open class KeychainStringStore: AbstractKeychainStore {
     /// - parameter string: The `String` to be stored
     /// - parameter key: The key of the item to be stored
     /// - parameter accessibility: The accessibility type of the string
-    open func set(string: String, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
+    public func set(_ string: String, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
         if let data = string.data(using: String.Encoding.utf8) {
             try set(data: data, forKey: key, accessibility: accessibility)
         } else {
@@ -36,7 +36,7 @@ open class KeychainStringStore: AbstractKeychainStore {
     /// Updates the string associated with the specified key
     /// - parameter string: The `String` object
     /// - parameter key: The key of the `String` to be updated
-    open func update(string: String, forKey key: String) throws {
+    public func update(_ string: String, forKey key: String) throws {
         if let data = string.data(using: String.Encoding.utf8) {
             try update(data: data, forKey: key)
         } else {

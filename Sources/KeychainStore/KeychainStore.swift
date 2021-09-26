@@ -8,33 +8,33 @@
 
 import Foundation
 
-open class KeychainStore<T: Codable>: AbstractKeychainStore {
+public final class KeychainStore<T: Codable>: AbstractKeychainStore {
     
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
   
-    /// Retrieves an object from the keychain with the specified key
+    /// Retrieves an instance from the keychain with the specified key
     /// - parameter key: The key of the item to be retrieved
-    /// - returns: The object from the keychain
-    open func object(forKey key: String) throws -> T? {
+    /// - returns: The instance from the keychain
+    public func instance(forKey key: String) throws -> T? {
         guard let data = try data(forKey: key) else { return nil }
         return try decoder.decode(T.self, from: data)
     }
     
-    /// Adds an object to the keychain with the specified key
-    /// - parameter object: The object to be stored
+    /// Adds an instance to the keychain with the specified key
+    /// - parameter instance: The object to be stored
     /// - parameter key: The key of the item to be stored
     /// - parameter accessibility: The accessibility type of the object
-    open func set(object: T, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
-        let data = try encoder.encode(object)
+    public func set(_ instance: T, forKey key: String, accessibility: KeychainAccessibility = .whenUnlocked) throws {
+        let data = try encoder.encode(instance)
         try set(data: data, forKey: key, accessibility: accessibility)
     }
     
-    /// Updates the object associated with the specified key
-    /// - parameter object: The updated object
+    /// Updates the instance associated with the specified key
+    /// - parameter instance: The updated object
     /// - parameter key: The key of the object to be updated
-    open func update(object: T, forKey key: String) throws {
-        let data = try encoder.encode(object)
+    public func update(_ instance: T, forKey key: String) throws {
+        let data = try encoder.encode(instance)
         try update(data: data, forKey: key)
     }
     

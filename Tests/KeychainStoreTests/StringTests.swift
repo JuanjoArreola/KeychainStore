@@ -25,7 +25,7 @@ class StringTests: XCTestCase {
     
     func testSaveString() {
         do {
-            try store.set(string: "test", forKey: "This is a test")
+            try store.set("test", forKey: "This is a test")
         } catch {
             XCTFail()
             print(error)
@@ -34,7 +34,7 @@ class StringTests: XCTestCase {
     
     func testGetString() {
         do {
-            try store.set(string: "This is a Test", forKey: "test")
+            try store.set("This is a Test", forKey: "test")
             
             let result = try store.string(forKey: "test")
             XCTAssertNotNil(result)
@@ -45,8 +45,8 @@ class StringTests: XCTestCase {
     
     func testUpdateString() {
         do {
-            try store.set(string: "This is a Test", forKey: "test")
-            try store.update(string: "Change test", forKey: "test")
+            try store.set("This is a Test", forKey: "test")
+            try store.update("Change test", forKey: "test")
             
             let result = try store.string(forKey: "test")
             XCTAssertNotNil(result)
@@ -58,7 +58,7 @@ class StringTests: XCTestCase {
     
     func testDeleteString() {
         do {
-            try store.set(string: "This is a Test", forKey: "test")
+            try store.set("This is a Test", forKey: "test")
             try store.deleteItem(forKey: "test")
             let result = try store.string(forKey: "test")
             XCTAssertNil(result)
@@ -69,7 +69,7 @@ class StringTests: XCTestCase {
     
     func testUpdateNonexistentString() {
         do {
-            try store.update(string: "Updated string", forKey: "NotAKey")
+            try store.update("Updated string", forKey: "NotAKey")
             XCTFail()
         } catch KeychainStoreError.itemNotFound {
         } catch {
@@ -79,7 +79,7 @@ class StringTests: XCTestCase {
     
     func testSaveAndGetStringWithAccessibility() {
         do {
-            try store.set(string: "whenPasscode", forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
+            try store.set("whenPasscode", forKey: "test", accessibility: KeychainAccessibility.whenPasscodeSetThisDeviceOnly)
             
             let result = try store.string(forKey: "test")
             XCTAssertNotNil(result)
@@ -90,9 +90,9 @@ class StringTests: XCTestCase {
     
     func testGetAllKeys() {
         do {
-            try store.set(string: "test 1", forKey: "key1")
-            try store.set(string: "test 2", forKey: "key2")
-            try store.set(string: "test 3", forKey: "key3")
+            try store.set("test 1", forKey: "key1")
+            try store.set("test 2", forKey: "key2")
+            try store.set("test 3", forKey: "key3")
             
             try store.deleteItem(forKey: "key2")
             let keys = try store.allKeys()
